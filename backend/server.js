@@ -295,7 +295,7 @@ app.get("/api/playlists/liked-songs/songs", (req, resp, next) => {
 
     pool.query("SELECT P.SongListID FROM Playlist AS P WHERE P.PlaylistType=1 AND P.ConsumerID=?", [ConsumerID], (err, results) => {
         console.log(err, results);
-        const SongListID = results[0];
+        const {SongListID} = results[0];
 
         const query = `SELECT Song.Singer, Record.Name, Record.PublishDate, Record.Duration FROM Record INNER JOIN Song ON Song.RecordID=Record.RecordID WHERE Song.RecordID IN (SELECT SongID AS RecordID FROM Contains WHERE SongListID=?);`;
         pool.query(query, [SongListID], (err, results) => {
@@ -361,7 +361,7 @@ app.get("/api/songs/:RecordID", (req, resp, next) => {
 });
 app.get("/api/songs/:RecordID/comments", (req, resp, next) => {
     const {RecordID} = req.params;
-    const query = `SELECT C.Content, C.Date AS CommentDate, U.Username, U.ProfilePic FROM Comment AS C INNER JOIN Record AS R ON C.RecordID=R.RecordID INNER JOIN User AS U ON C.ConsumerID=U.UserID ORDER BY C.Date DESC;`;
+    const query = `SELECT C.Content, C.Date AS CommentDate, U.Username, U.ProfilePic FROM Comment AS C INNER JOIN Record AS R ON C.RecordID=R.RecordID INNER JOIN User AS U ON C.ConsumerID=U.UserID WHERE R.RecordID=? ORDER BY C.Date DESC;`;
     pool.query(query, [RecordID], (err, results) => {
         if (err)
             return resp.status(500).json({

@@ -29,7 +29,7 @@ const SongCard = ({ RecordID, RecordPic, Name, Singer }) => {
 
     const handleClick = (e, sender) => {
         if (sender === "card") {
-            history.push(`/songs/1`);
+            history.push(`/songs/${RecordID}`);
         }
         else {
             togglePlay({Name, Singer}, "http://localhost:3001/api/record-file/" + RecordID);
